@@ -1,7 +1,11 @@
 local mymath =  {}
 
 function mymath.add(a,b)
-   print(a+b)
+   return (a+b)
+end
+
+function mymath.test()
+   return "test"
 end
 
 function mymath.sub(a,b)

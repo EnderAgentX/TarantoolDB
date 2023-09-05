@@ -67,7 +67,7 @@ local function bootstrap()
 	
 
 	box.schema.user.create('ex', { password = 'secret' })
-	box.schema.user.grant('ex', 'read,write,execute', 'space', 'ex')
+	box.schema.user.grant('ex','read,write,execute,create,drop','universe')
 
 	box.schema.user.create('repl', { password = 'replication' })
 	box.schema.user.grant('repl', 'replication')
@@ -99,6 +99,6 @@ end
 ---------------------------------------------------------------------------------------------------------------------
 --             Для отладки запустим консоль
 ---------------------------------------------------------------------------------------------------------------------
-mymathmodule = require("mymath")
+mm = require("mymath")
 
 console.start()
