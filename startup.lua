@@ -35,16 +35,16 @@ local session_life_time = 600 -- Время жизни сессии
 
 
 local function bootstrap()
+box.schema.sequence.create('user_id',{min=1, start=1})
+box.schema.sequence.create('msg_id',{min=1, start=1, max=100,cycle=true})
+
 	local s_user = box.schema.create_space('user')
 	s_user:format({
 		{name = 'user_id', type = 'unsigned'},
 		{name = 'user_name', type = 'string'},
 		{name = 'guild_id', type = 'unsigned'}
 	})
-	s_user:create_index('primary', {
-			type = 'tree',
-			parts = {'user_id'}
-	})
+	s_user:create_index('primary',{ sequence = 'user_id' })
 	s_user:create_index('secondary', {
 		type = 'tree',
 		parts = {'user_name'}
@@ -63,6 +63,20 @@ local function bootstrap()
 		type = 'tree',
 		parts = {'guild_name'}
 	})
+
+	local s_msg = box.schema.create_space('msg')
+	s_msg:format({
+		{name = "message", type = 'string'},
+		{name = "guild_id", type = 'unsigned'}
+	})
+
+	s_msg:create_index('primary',{ sequence = 'msg_id' })
+	s_msg:create_index('secondary', {
+		type = 'tree',
+		parts = {'guild_id'}
+	})
+
+
 
 	
 
