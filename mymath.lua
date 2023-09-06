@@ -1,4 +1,5 @@
 local mymath =  {}
+local datetime = require('datetime')
 
 function mymath.add(a,b)
    return (a+b)
@@ -32,4 +33,30 @@ function mymath.user_guild(user_name)
    return box.space.guild.index.primary:get{t_user.guild_id}.guild_name
 end
 
+function mymath.new_msg(message, guild_id)
+   local tt = 1
+   if (tt == nil or tt == '') then 
+      tt = 1
+   else
+      tt = box.space.msg.index.time:select({}, {iterator = 'REQ', limit = 1, sort = 'ask'})[1][1] + 1
+      print(tt)
+      
+   end
+   local tm = datetime.now()
+   local tm = datetime.now()
+   box.space.msg:insert{tt, message, 1, tm}
+   
+end
+
+function mymath.time_test()
+   local tm = datetime.now()
+   box.space.msg:insert{1, "ab", 1, tm}
+   box.space.msg:select()
+   print(tm)
+end
+
 return mymath	
+
+
+--Последний элемент по времени
+--box.space.msg.index.time:select({}, {iterator = 'REQ', limit = 1, sort = 'ask'})

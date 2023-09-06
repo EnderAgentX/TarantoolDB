@@ -60,7 +60,7 @@ local function bootstrap()
 			type = 'tree',
 			parts = {'guild_id'}
 	})
-	s_guild:create_index('secondary', {
+	s_guild:create_index('guild', {
 		type = 'tree',
 		parts = {'guild_name'}
 	})
@@ -70,36 +70,16 @@ local function bootstrap()
 		{name = "msg_id", type = 'unsigned'},
 		{name = "message", type = 'string'},
 		{name = "guild_id", type = 'unsigned'},
-		{name = "num", type = 'unsigned'}
+		{name = "msg_time", type = 'datetime'}
 	})
 	s_msg:create_index('primary', {
 		type = 'tree',
 		parts = {'msg_id'}
 	})
-	s_msg:create_index('secondary', {
+	s_msg:create_index('time', {
 		type = 'tree',
-		parts = {'num'}
+		parts = {'msg_time'}
 	})
-	s_msg:create_index('guild', {
-		type = 'tree',
-		parts = {'guild_id'}
-	})
-	
-
-	[[s_msg:format({
-		{name = "msg_id", type = 'unsigned'},
-		{name = "message", type = 'string'},
-		{name = "guild_id", type = 'unsigned'},
-		{name = "num", type = 'unsigned'}
-	})
-
-	s_msg:create_index('primary',{ sequence = 'msg_id' })
-	s_msg:create_index('secondary', {
-		type = 'tree',
-		parts = {'guild_id'}
-	})
-	s_msg:create_index('number',{ sequence = 'num' })]]
-
 	
 	
 
