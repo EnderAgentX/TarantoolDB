@@ -28,24 +28,33 @@ function mymath.get_guild_id(user_id)
 end
 
 function mymath.user_guild(user_name)
-   local t_user = box.space.user.index.secondary:get{user_name}
+   local t_user =  box.space.user.index.name:get{user_name}
    local t_user_guild =  t_user.guild_id
    return box.space.guild.index.primary:get{t_user.guild_id}.guild_name
 end
 
-function mymath.new_msg(message, guild_id)
+function mymath.new_msg(message, guild_id, user_id)
+   local cnt = box.space.msg:count()
    local tt = 1
-   if (tt == nil or tt == '') then 
+   if (cnt == 0) then 
       tt = 1
+      print("nil")
    else
       tt = box.space.msg.index.time:select({}, {iterator = 'REQ', limit = 1, sort = 'ask'})[1][1] + 1
       print(tt)
       
    end
    local tm = datetime.now()
-   local tm = datetime.now()
-   box.space.msg:insert{tt, message, 1, tm}
+   if (message ~= "") then
+      box.space.msg:insert{tt, message, guild_id, user_id, tm}
+   end
    
+end
+
+function mymath.login(user_name)
+   t_name = box.space.user.index.name:select(user_name)
+   t_guild = t_name[1][3]
+   return t_guild, t_name[1][1]
 end
 
 function mymath.time_test()

@@ -46,7 +46,7 @@ local function bootstrap()
 		type = 'tree',
 		parts = {'user_id'}
 })
-	s_user:create_index('secondary', {
+	s_user:create_index('name', {
 		type = 'tree',
 		parts = {'user_name'}
 	})
@@ -70,6 +70,7 @@ local function bootstrap()
 		{name = "msg_id", type = 'unsigned'},
 		{name = "message", type = 'string'},
 		{name = "guild_id", type = 'unsigned'},
+		{name = "user_id", type = 'unsigned'},
 		{name = "msg_time", type = 'datetime'}
 	})
 	s_msg:create_index('primary', {
