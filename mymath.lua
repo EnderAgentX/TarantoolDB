@@ -75,6 +75,13 @@ function mymath.guild_msg(guild_id)
    return box.space.msg.index.guild_id:select{guild_id}
 end
 
+function mymath.users()
+   t_users = box.space.user:select()
+   for i = 1, #t_users do 
+      print(t_users[i][2])
+   end
+end
+
 return mymath	
 
 
