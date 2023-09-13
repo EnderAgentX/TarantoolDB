@@ -1,3 +1,6 @@
 *.log
+*.xlog
+*.snap
 **/snap
 **/wal
+

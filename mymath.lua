@@ -64,6 +64,17 @@ function mymath.time_test()
    print(tm)
 end
 
+function mymath.insertAll()
+   box.space.guild:insert{1, 'EscapeWorld'}
+   box.space.user:insert{1, 'EnderAgent_X', 1}
+   box.space.guild:insert{2, 'Robots'}
+   box.space.user:insert{2, 'Bot', 2}
+end
+
+function mymath.guild_msg(guild_id)
+   return box.space.msg.index.guild_id:select{guild_id}
+end
+
 return mymath	
 
 

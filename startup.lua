@@ -80,6 +80,12 @@ local function bootstrap()
 	s_msg:create_index('time', {
 		type = 'tree',
 		parts = {'msg_time'}
+
+	})
+	s_msg:create_index('guild_id', {
+		type = 'tree',
+		unique = false,
+		parts = {'guild_id'}
 	})
 	
 	
@@ -98,6 +104,8 @@ box.once('replica', bootstrap)
 --box.space.guild:insert{1, 'EscapeWorld'}
 --box.space.user:insert{1, 'EnderAgent_X', 1}
 --box.space.user.index.primary:select()
+--box.space.guild:insert{2, 'Robots'}
+--box.space.user:insert{2, 'Bot', 2}
 
 ---------------------------------------------------------------------------------------------------------------------
 --             Проверка строки на NULL или пустую строку
