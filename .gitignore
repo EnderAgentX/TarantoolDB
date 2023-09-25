@@ -3,4 +3,4 @@
 *.snap
 **/snap
 **/wal
-
+*.pid

@@ -54,7 +54,7 @@ end
 function mymath.login(user_name)
    t_name = box.space.user.index.name:select(user_name)
    t_guild = t_name[1][3]
-   return t_guild, t_name[1][1]
+   return t_name[1][1], t_guild 
 end
 
 function mymath.time_test()
