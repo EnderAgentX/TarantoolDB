@@ -72,14 +72,21 @@ function mymath.insertAll()
 end
 
 function mymath.guild_msg(guild_id)
-   return box.space.msg.index.guild_id:select{guild_id}
+   t_msg = box.space.msg.index.guild_id:select{guild_id}
+   local t_msg_arr = {}
+   for i = 1, #t_msg do 
+      table.insert( t_msg_arr, t_msg[i][2] )
+   end
+   return t_msg_arr
 end
 
 function mymath.users()
    t_users = box.space.user:select()
+   local t_users_arr = {}
    for i = 1, #t_users do 
-      print(t_users[i][2])
+      table.insert( t_users_arr, t_users[i][2] )
    end
+   return t_users_arr
 end
 
 return mymath	
