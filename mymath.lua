@@ -33,6 +33,13 @@ function mymath.user_guild(user_name)
    return box.space.guild.index.primary:get{t_user.guild_id}.guild_name
 end
 
+
+function mymath.get_name(user_id)
+   return box.space.user.index.primary:get{user_id}[2]
+
+end
+
+
 function mymath.new_msg(message, guild_id, user_id)
    local cnt = box.space.msg:count()
    local tt = 1
@@ -57,6 +64,8 @@ function mymath.login(user_name)
    return t_name[1][1], t_guild 
 end
 
+
+
 function mymath.time_test()
    local tm = datetime.now()
    box.space.msg:insert{1, "ab", 1, tm}
@@ -75,7 +84,7 @@ function mymath.guild_msg(guild_id)
    t_msg = box.space.msg.index.guild_id:select{guild_id}
    local t_msg_arr = {}
    for i = 1, #t_msg do 
-      table.insert( t_msg_arr, t_msg[i][2] )
+      table.insert( t_msg_arr, {t_msg[i][2], t_msg[i][4]} )
    end
    return t_msg_arr
 end
