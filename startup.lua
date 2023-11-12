@@ -71,7 +71,7 @@ local function bootstrap()
 		{name = "message", type = 'string'},
 		{name = "guild_id", type = 'unsigned'},
 		{name = "user_id", type = 'unsigned'},
-		{name = "msg_time", type = 'datetime'}
+		{name = "msg_time", type = 'unsigned'}
 	})
 	s_msg:create_index('primary', {
 		type = 'tree',

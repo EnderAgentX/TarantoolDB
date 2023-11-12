@@ -51,7 +51,7 @@ function mymath.new_msg(message, guild_id, user_id)
       print(tt)
       
    end
-   local tm = datetime.now()
+   local tm = os.time()
    if (message ~= "") then
       box.space.msg:insert{tt, message, guild_id, user_id, tm}
    end
@@ -67,7 +67,7 @@ end
 
 
 function mymath.time_test()
-   local tm = datetime.now()
+   local tm = os.time()
    box.space.msg:insert{1, "ab", 1, tm}
    box.space.msg:select()
    print(tm)
@@ -98,8 +98,22 @@ function mymath.users()
    return t_users_arr
 end
 
+--TODO Поиск всех сообщений из 1 гильдии больше времени последнего сообщения
+
+function mymath.time_guild_msg() --загружает сообщения больше определенного времени
+   datetime = 1699810290
+   return box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
+end
+
+
+
+
 return mymath	
 
 
 --Последний элемент по времени
 --box.space.msg.index.time:select({}, {iterator = 'REQ', limit = 1, sort = 'ask'})
+
+--TODO 
+--1) Переделать id на UUID
+--2) Не загружает когда нет сообщений в гильдии
