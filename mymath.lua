@@ -84,7 +84,7 @@ function mymath.guild_msg(guild_id)
    t_msg = box.space.msg.index.guild_id:select{guild_id}
    local t_msg_arr = {}
    for i = 1, #t_msg do 
-      table.insert( t_msg_arr, {t_msg[i][2], t_msg[i][4]} )
+      table.insert( t_msg_arr, {t_msg[i][2], t_msg[i][4], t_msg[i][5]} )
    end
    return t_msg_arr
 end
@@ -100,8 +100,7 @@ end
 
 --TODO Поиск всех сообщений из 1 гильдии больше времени последнего сообщения
 
-function mymath.time_guild_msg() --загружает сообщения больше определенного времени
-   datetime = 1699810290
+function mymath.time_guild_msg(datetime) --загружает сообщения больше определенного времени
    return box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
 end
 
