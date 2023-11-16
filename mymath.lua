@@ -100,8 +100,35 @@ end
 
 --TODO Поиск всех сообщений из 1 гильдии больше времени последнего сообщения
 
-function mymath.time_guild_msg(datetime) --загружает сообщения больше определенного времени
-   return box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
+-- function mymath.time_guild_msg(datetime) --загружает сообщения больше определенного времени
+--    t_msg = box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
+--    local t_msg_arr = {}
+--    local cnt = 0
+--    for i = 1, #t_msg do 
+--       table.insert( t_msg_arr, {t_msg[i][2], t_msg[i][4], t_msg[i][5]} )
+--       cnt = cnt + 1
+--    end
+--    return cnt, t_msg_arr
+-- end
+
+function mymath.time_guild_msg(guild, datetime) --загружает сообщения больше определенного времени
+   t_msg1 = box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
+   t_msg2 = box.space.msg.index.guild_id:select{guild}
+   local combined_result = {}
+   for _, v in ipairs(t_msg1) do
+      for _, w in ipairs(t_msg2) do
+         if v == w then
+            table.insert(combined_result, v)
+         end
+      end
+   end 
+   local t_msg_arr = {}
+   local cnt = 0
+   for i = 1, #combined_result do 
+      table.insert( t_msg_arr, {combined_result[i][2], combined_result[i][4], combined_result[i][5]} )
+      cnt = cnt + 1
+   end
+   return cnt, t_msg_arr
 end
 
 
