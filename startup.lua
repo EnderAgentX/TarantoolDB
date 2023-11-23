@@ -38,9 +38,9 @@ local function bootstrap()
 
 	local s_user = box.schema.create_space('user')
 	s_user:format({
-		{name = 'user_id', type = 'unsigned'},
+		{name = 'user_id', type = 'string'},
 		{name = 'user_name', type = 'string'},
-		{name = 'guild_id', type = 'unsigned'}
+		{name = 'guild_id', type = 'string'}
 	})
 	s_user:create_index('primary', {
 		type = 'tree',
@@ -53,7 +53,7 @@ local function bootstrap()
 
 	local s_guild = box.schema.create_space('guild')
 	s_guild:format({
-		{name = "guild_id", type = 'unsigned'},
+		{name = "guild_id", type = 'string'},
 		{name = "guild_name", type = 'string'}
 	})
 	s_guild:create_index('primary', {
@@ -67,10 +67,10 @@ local function bootstrap()
 
 	local s_msg = box.schema.create_space('msg')
 	s_msg:format({
-		{name = "msg_id", type = 'unsigned'},
+		{name = "msg_id", type = 'string'},
 		{name = "message", type = 'string'},
-		{name = "guild_id", type = 'unsigned'},
-		{name = "user_id", type = 'unsigned'},
+		{name = "guild_id", type = 'string'},
+		{name = "user_id", type = 'string'},
 		{name = "msg_time", type = 'unsigned'}
 	})
 	s_msg:create_index('primary', {

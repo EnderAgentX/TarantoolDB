@@ -1,3 +1,5 @@
+local uuid = require('uuid')
+
 local mymath =  {}
 local datetime = require('datetime')
 
@@ -41,19 +43,10 @@ end
 
 
 function mymath.new_msg(message, guild_id, user_id)
-   local cnt = box.space.msg:count()
-   local tt = 1
-   if (cnt == 0) then 
-      tt = 1
-      print("nil")
-   else
-      tt = box.space.msg.index.time:select({}, {iterator = 'REQ', limit = 1, sort = 'ask'})[1][1] + 1
-      print(tt)
-      
-   end
+   local msg_id = uuid.bin()
    local tm = os.time()
    if (message ~= "") then
-      box.space.msg:insert{tt, message, guild_id, user_id, tm}
+      box.space.msg:insert{msg_id, message, guild_id, user_id, tm}
    end
    
 end
@@ -74,10 +67,10 @@ function mymath.time_test()
 end
 
 function mymath.insertAll()
-   box.space.guild:insert{1, 'EscapeWorld'}
-   box.space.user:insert{1, 'EnderAgent_X', 1}
-   box.space.guild:insert{2, 'Robots'}
-   box.space.user:insert{2, 'Bot', 2}
+   mm.new_guild("EscapeWorld")
+   mm.new_guild("Robots")
+   mm.new_user("EnderAgent_X","EscapeWorld")
+   mm.new_user("Bot","Robots")
 end
 
 function mymath.guild_msg(guild_id)
@@ -131,12 +124,24 @@ function mymath.time_guild_msg(guild, datetime) --загружает сообщ�
    return cnt, t_msg_arr
 end
 
+function mymath.new_user(name, guild_name) 
+   local user_id = uuid.bin()
+   local guild_id = box.space.guild.index.guild:get{guild_name}.guild_id
+   box.space.user:insert{user_id, name, guild_id}
+end
+
+function mymath.new_guild(name) 
+   local guild_id = uuid.bin()
+   box.space.guild:insert{guild_id, name}
+end
+
 
 
 
 return mymath	
 
-
+--lsof -i :3312
+--kill 4593
 --Последний элемент по времени
 --box.space.msg.index.time:select({}, {iterator = 'REQ', limit = 1, sort = 'ask'})
 
