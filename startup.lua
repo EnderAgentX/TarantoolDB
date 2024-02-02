@@ -40,7 +40,7 @@ local function bootstrap()
 	s_user:format({
 		{name = 'user_id', type = 'string'},
 		{name = 'user_name', type = 'string'},
-		{name = 'guild_id', type = 'string'}
+		{name = 'pass', type = 'string'}
 	})
 	s_user:create_index('primary', {
 		type = 'tree',
@@ -51,25 +51,47 @@ local function bootstrap()
 		parts = {'user_name'}
 	})
 
-	local s_guild = box.schema.create_space('guild')
-	s_guild:format({
-		{name = "guild_id", type = 'string'},
-		{name = "guild_name", type = 'string'}
+	local s_group = box.schema.create_space('group')
+	s_group:format({
+		{name = "group_id", type = 'string'},
+		{name = "group_name", type = 'string'}
 	})
-	s_guild:create_index('primary', {
+	s_group:create_index('primary', {
 			type = 'tree',
-			parts = {'guild_id'}
+			parts = {'group_id'}
 	})
-	s_guild:create_index('guild', {
+	s_group:create_index('group', {
 		type = 'tree',
-		parts = {'guild_name'}
+		parts = {'group_name'}
 	})
+
+	local s_usergroup = box.schema.create_space('usergroup')
+	s_usergroup:format({
+		{name = "usergroup_id", type = 'string'},
+		{name = "user", type = 'string'},
+		{name = "group", type = 'string'}
+	})
+	s_usergroup:create_index('primary', {
+		type = 'tree',
+		parts = {'usergroup_id'}
+	})
+	s_usergroup:create_index('user', {
+		type = 'tree',
+		parts = {'user'}
+	})
+	s_usergroup:create_index('group', {
+		type = 'tree',
+		parts = {'group'}
+	})
+
+
+
 
 	local s_msg = box.schema.create_space('msg')
 	s_msg:format({
 		{name = "msg_id", type = 'string'},
 		{name = "message", type = 'string'},
-		{name = "guild_id", type = 'string'},
+		{name = "group_id", type = 'string'},
 		{name = "user_id", type = 'string'},
 		{name = "msg_time", type = 'unsigned'}
 	})
@@ -82,10 +104,10 @@ local function bootstrap()
 		parts = {'msg_time'}
 
 	})
-	s_msg:create_index('guild_id', {
+	s_msg:create_index('group_id', {
 		type = 'tree',
 		unique = false,
-		parts = {'guild_id'}
+		parts = {'group_id'}
 	})
 	
 	
@@ -115,9 +137,9 @@ local function is_str_empty(str)
 end
 
 
-local function get_guild_id(user_id)
+local function get_group_id(user_id)
 	local t_user_id = s_user.index.primary:get{user_id}
-	return t_user_id[guild_id]
+	return t_user_id[group_id]
 end
 
 
@@ -125,6 +147,6 @@ end
 ---------------------------------------------------------------------------------------------------------------------
 --             Для отладки запустим консоль
 ---------------------------------------------------------------------------------------------------------------------
-mm = require("mymath")
+fn = require("fn")
 
 console.start()

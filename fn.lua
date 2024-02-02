@@ -1,7 +1,9 @@
 local uuid = require('uuid')
+local digest = require('digest')
+local datetime = require('datetime')
 
 local fn =  {}
-local datetime = require('datetime')
+
 
 
 
@@ -53,11 +55,11 @@ function fn.new_msg(message, guild_id, user_id)
    
 end
 
-function fn.login(user_name)
-   t_name = box.space.user.index.name:select(user_name)
-   t_guild = t_name[1][3]
-   return t_name[1][1], t_guild 
-end
+-- function fn.login(user_name)
+--    t_name = box.space.user.index.name:select(user_name)
+--    t_guild = t_name[1][3]
+--    return t_name[1][1], t_guild 
+-- end
 
 
 
@@ -126,15 +128,30 @@ function fn.time_guild_msg(guild, datetime) --загружает сообщен�
    return cnt, t_msg_arr
 end
 
-function fn.new_user(name, guild_name) 
+function fn.new_user(name, pass) 
    local user_id = uuid.bin()
-   local guild_id = box.space.guild.index.guild:get{guild_name}.guild_id
-   box.space.user:insert{user_id, name, guild_id}
+   local hashed_password = digest.sha256(pass)
+   box.space.user:insert{user_id, name, hashed_password}
+end
+
+function fn.login(name, pass)
+   local user_password = box.space.user.index.name:get("artem").pass 
+   local hashed_password = digest.sha256(pass)
+   if user_password == hashed_password then
+      return true
+   else 
+      return false
+   end
 end
 
 function fn.new_guild(name) 
    local guild_id = uuid.bin()
    box.space.guild:insert{guild_id, name}
+end
+
+function fn.hash_password(password)
+   local hashed_password = digest.sha256(password)
+   return hashed_password
 end
 
 
