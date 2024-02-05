@@ -77,10 +77,12 @@ local function bootstrap()
 	})
 	s_usergroup:create_index('user', {
 		type = 'tree',
+		unique = false,
 		parts = {'user'}
 	})
 	s_usergroup:create_index('group', {
 		type = 'tree',
+		unique = false,
 		parts = {'group'}
 	})
 

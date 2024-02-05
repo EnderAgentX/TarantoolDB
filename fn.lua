@@ -131,11 +131,18 @@ end
 function fn.new_user(name, pass) 
    local user_id = uuid.bin()
    local hashed_password = digest.sha256(pass)
+   if box.space.user.index.name:get(name) ~= nil then
+      return false
+   end
    box.space.user:insert{user_id, name, hashed_password}
+   return true
 end
 
 function fn.login(name, pass)
-   local user_password = box.space.user.index.name:get("artem").pass 
+   if box.space.user.index.name:get(name) == nil then
+      return false
+   end
+   local user_password = box.space.user.index.name:get(name).pass 
    local hashed_password = digest.sha256(pass)
    if user_password == hashed_password then
       return true
@@ -147,6 +154,11 @@ end
 function fn.new_guild(name) 
    local guild_id = uuid.bin()
    box.space.guild:insert{guild_id, name}
+end
+
+function fn.new_group(name, group) 
+   local group_id = uuid.bin()
+   box.space.usergroup:insert{group_id, name, group}
 end
 
 function fn.hash_password(password)
