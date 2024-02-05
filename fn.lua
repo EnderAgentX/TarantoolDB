@@ -166,6 +166,14 @@ function fn.hash_password(password)
    return hashed_password
 end
 
+function fn.get_user_groups(name)
+   local t_user_groups = box.space.usergroup.index.user:select(name)
+   local t_user_groups_names = {}
+   for i = 1, #t_user_groups do
+      table.insert( t_user_groups_names, t_user_groups[i][3] )
+   end
+   return t_user_groups_names
+end
 
 
 
