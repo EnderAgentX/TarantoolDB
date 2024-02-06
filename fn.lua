@@ -28,15 +28,15 @@ function fn.div(a,b)
 end
 
 local s_users = box.space.user
-function fn.get_guild_id(user_id)
+function fn.get_group_id(user_id)
 	local t_user_id = s_user.index.primary:get{user_id}
-	return t_user_id[guild_id]
+	return t_user_id[group_id]
 end
 
-function fn.user_guild(user_name)
+function fn.user_group(user_name)
    local t_user =  box.space.user.index.name:get{user_name}
-   local t_user_guild =  t_user.guild_id
-   return box.space.guild.index.primary:get{t_user.guild_id}.guild_name
+   local t_user_group =  t_user.group_id
+   return box.space.group.index.primary:get{t_user.group_id}.group_name
 end
 
 
@@ -46,19 +46,19 @@ function fn.get_name(user_id)
 end
 
 
-function fn.new_msg(message, guild_id, user_id)
+function fn.new_msg(message, group, user)
    local msg_id = uuid.bin()
    local tm = os.time()
    if (message ~= "") then
-      box.space.msg:insert{msg_id, message, guild_id, user_id, tm}
+      box.space.msg:insert{msg_id, message, group, user, tm}
    end
    
 end
 
 -- function fn.login(user_name)
 --    t_name = box.space.user.index.name:select(user_name)
---    t_guild = t_name[1][3]
---    return t_name[1][1], t_guild 
+--    t_group = t_name[1][3]
+--    return t_name[1][1], t_group 
 -- end
 
 
@@ -71,14 +71,14 @@ function fn.time_test()
 end
 
 function fn.insertAll()
-   mm.new_guild("EscapeWorld")
-   mm.new_guild("Robots")
+   mm.new_group("EscapeWorld")
+   mm.new_group("Robots")
    mm.new_user("EnderAgent_X","EscapeWorld")
    mm.new_user("Bot","Robots")
 end
 
-function fn.guild_msg(guild_id)
-   t_msg = box.space.msg.index.guild_id:select{guild_id}
+function fn.group_msg(group_id)
+   t_msg = box.space.msg.index.group_id:select{group_id}
    local t_msg_arr = {}
    for i = 1, #t_msg do 
       table.insert( t_msg_arr, {t_msg[i][2], t_msg[i][4], t_msg[i][5]} )
@@ -97,7 +97,7 @@ end
 
 --TODO Поиск всех сообщений из 1 гильдии больше времени последнего сообщения
 
--- function fn.time_guild_msg(datetime) --загружает сообщения больше определенного времени
+-- function fn.time_group_msg(datetime) --загружает сообщения больше определенного времени
 --    t_msg = box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
 --    local t_msg_arr = {}
 --    local cnt = 0
@@ -108,9 +108,9 @@ end
 --    return cnt, t_msg_arr
 -- end
 
-function fn.time_guild_msg(guild, datetime) --загружает сообщения больше определенного времени
+function fn.time_group_msg(group, datetime) --загружает сообщения больше определенного времени
    t_msg1 = box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
-   t_msg2 = box.space.msg.index.guild_id:select{guild}
+   t_msg2 = box.space.msg.index.group:select{group}
    local combined_result = {}
    for _, v in ipairs(t_msg1) do
       for _, w in ipairs(t_msg2) do
@@ -151,10 +151,6 @@ function fn.login(name, pass)
    end
 end
 
-function fn.new_guild(name) 
-   local guild_id = uuid.bin()
-   box.space.guild:insert{guild_id, name}
-end
 
 function fn.new_group(name, group) 
    local group_id = uuid.bin()

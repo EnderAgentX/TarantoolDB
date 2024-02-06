@@ -93,8 +93,8 @@ local function bootstrap()
 	s_msg:format({
 		{name = "msg_id", type = 'string'},
 		{name = "message", type = 'string'},
-		{name = "group_id", type = 'string'},
-		{name = "user_id", type = 'string'},
+		{name = "group", type = 'string'},
+		{name = "user", type = 'string'},
 		{name = "msg_time", type = 'unsigned'}
 	})
 	s_msg:create_index('primary', {
@@ -106,10 +106,10 @@ local function bootstrap()
 		parts = {'msg_time'}
 
 	})
-	s_msg:create_index('group_id', {
+	s_msg:create_index('group', {
 		type = 'tree',
 		unique = false,
-		parts = {'group_id'}
+		parts = {'group'}
 	})
 	
 	
