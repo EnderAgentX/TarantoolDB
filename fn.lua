@@ -48,9 +48,10 @@ end
 
 function fn.new_msg(message, group, user)
    local msg_id = uuid.bin()
+   local group_id = box.space.group.index.group:get(group).group_id
    local tm = os.time()
    if (message ~= "") then
-      box.space.msg:insert{msg_id, message, group, user, tm}
+      box.space.msg:insert{msg_id, message, group_id, user, tm}
    end
    
 end
@@ -109,8 +110,9 @@ end
 -- end
 
 function fn.time_group_msg(group, datetime) --загружает сообщения больше определенного времени
+   group_id = box.space.group.index.group:get(group).group_id
    t_msg1 = box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
-   t_msg2 = box.space.msg.index.group:select{group}
+   t_msg2 = box.space.msg.index.group_id:select{group_id}
    local combined_result = {}
    for _, v in ipairs(t_msg1) do
       for _, w in ipairs(t_msg2) do
@@ -155,6 +157,7 @@ end
 function fn.new_group(name, group) 
    local group_id = uuid.bin()
    box.space.usergroup:insert{group_id, name, group}
+   box.space.group:insert{group_id, group}
 end
 
 function fn.hash_password(password)
@@ -169,6 +172,17 @@ function fn.get_user_groups(name)
       table.insert( t_user_groups_names, t_user_groups[i][3] )
    end
    return t_user_groups_names
+end
+
+function fn.del_group(user, group)
+   local del_id = box.space.usergroup.index.user_group:select({user, group})[1][1]
+   box.space.usergroup.index.primary:delete(del_id)
+end
+
+function fn.edit_group(user, group, new_group)
+   local del_id = box.space.usergroup.index.user_group:select({user, group})[1][1]
+   box.space.usergroup.index.primary:update(del_id, {{'=', 3, new_group}})
+   box.space.group.index.primary:update(del_id,{{'=', 2, new_group}})
 end
 
 
