@@ -108,10 +108,11 @@ local function bootstrap()
 	s_msg:create_index('time', {
 		type = 'tree',
 		parts = {'msg_time'}
-
 	})
+
 	s_msg:create_index('group_id', {
 		type = 'tree',
+		unique = false,
 		parts = {'group_id'}
 	})
 	
