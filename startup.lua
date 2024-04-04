@@ -56,12 +56,13 @@ local function bootstrap()
 		{name = "group_id", type = 'string'},
 		{name = "group_name", type = 'string'}
 	})
-	s_group:create_index('primary', {
+	s_group:create_index('group_id', {
 			type = 'tree',
 			parts = {'group_id'}
 	})
 	s_group:create_index('group', {
 		type = 'tree',
+		unique = false,
 		parts = {'group_name'}
 	})
 
@@ -69,7 +70,7 @@ local function bootstrap()
 	s_usergroup:format({
 		{name = "usergroup_id", type = 'string'},
 		{name = "user", type = 'string'},
-		{name = "group", type = 'string'}
+		{name = "group_id", type = 'string'}
 	})
 	s_usergroup:create_index('primary', {
 		type = 'tree',
@@ -80,14 +81,15 @@ local function bootstrap()
 		unique = false,
 		parts = {'user'}
 	})
-	s_usergroup:create_index('group', {
+	s_usergroup:create_index('group_id', {
 		type = 'tree',
-		parts = {'group'}
+		unique = false,
+		parts = {'group_id'}
 	})
 	s_usergroup:create_index('user_group', {
 		type = 'tree',
 		unique = false,
-		parts = {'user', 'group'}
+		parts = {'user', 'group_id'}
 	})
 
 

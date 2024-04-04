@@ -36,7 +36,7 @@ end
 function fn.user_group(user_name)
    local t_user =  box.space.user.index.name:get{user_name}
    local t_user_group =  t_user.group_id
-   return box.space.group.index.primary:get{t_user.group_id}.group_name
+   return box.space.group.index.group_id:get{t_user.group_id}.group_name
 end
 
 
@@ -46,9 +46,8 @@ function fn.get_name(user_id)
 end
 
 
-function fn.new_msg(message, group, user)
+function fn.new_msg(message, group_id, user)
    local msg_id = uuid.bin()
-   local group_id = box.space.group.index.group:get(group).group_id
    local tm = os.time()
    if (message ~= "") then
       box.space.msg:insert{msg_id, message, group_id, user, tm}
@@ -109,8 +108,7 @@ end
 --    return cnt, t_msg_arr
 -- end
 
-function fn.time_group_msg(group, datetime) --загружает сообщения больше определенного времени
-   group_id = box.space.group.index.group:get(group).group_id
+function fn.time_group_msg(group_id, datetime) --загружает сообщения больше определенного времени
    t_msg1 = box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
    t_msg2 = box.space.msg.index.group_id:select{group_id}
    local combined_result = {}
@@ -154,10 +152,27 @@ function fn.login(name, pass)
 end
 
 
-function fn.new_group(name, group) 
-   local group_id = uuid.bin()
-   box.space.usergroup:insert{group_id, name, group}
-   box.space.group:insert{group_id, group}
+function fn.new_group(name, group_id, group)
+   local usergroup_id = uuid.bin() 
+   if box.space.group.index.group_id:get(group_id) == nil then
+      --box.space.usergroup.index.user_group:select({"artem", "testID"}) TODO исправить одинаковые группы с именем
+      box.space.usergroup:insert{usergroup_id, name, group_id}
+      --if box.space.group.index.group:get(group) == nil then
+      box.space.group:insert{group_id, group}
+      --end
+   else
+      return false
+   end
+end
+
+function fn.join_group(name, group_id) 
+   --local group = box.space.group.index.group_id:get("testID").group_name
+   local usergroup_id = uuid.bin()
+   if box.space.group.index.group_id:get(group_id) ~= nil and box.space.usergroup.index.user:select(name)[1] == nil then
+      box.space.usergroup:insert{usergroup_id, name, group_id}
+   else
+      return false
+   end
 end
 
 function fn.hash_password(password)
@@ -169,7 +184,8 @@ function fn.get_user_groups(name)
    local t_user_groups = box.space.usergroup.index.user:select(name)
    local t_user_groups_names = {}
    for i = 1, #t_user_groups do
-      table.insert( t_user_groups_names, t_user_groups[i][3] )
+      local group_name = box.space.group.index.group_id:get(t_user_groups[i][3]).group_name
+      table.insert( t_user_groups_names, {t_user_groups[i][3], group_name} )
    end
    return t_user_groups_names
 end
@@ -182,7 +198,15 @@ end
 function fn.edit_group(user, group, new_group)
    local del_id = box.space.usergroup.index.user_group:select({user, group})[1][1]
    box.space.usergroup.index.primary:update(del_id, {{'=', 3, new_group}})
-   box.space.group.index.primary:update(del_id,{{'=', 2, new_group}})
+   box.space.group.index.group_id:update(del_id,{{'=', 2, new_group}})
+end
+
+function fn.check_group_id(group_id)
+   if box.space.group.index.group_id:get(group_id) == nil then
+      return true
+   else
+      return false
+   end
 end
 
 
