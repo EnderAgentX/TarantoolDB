@@ -154,14 +154,18 @@ end
 
 function fn.new_group(name, group_id, group)
    local usergroup_id = uuid.bin() 
+   if isStringOnlySpaces(group_id) then
+      return "0"
+   end
    if box.space.group.index.group_id:get(group_id) == nil then
       --box.space.usergroup.index.user_group:select({"artem", "testID"}) TODO исправить одинаковые группы с именем
       box.space.usergroup:insert{usergroup_id, name, group_id}
       --if box.space.group.index.group:get(group) == nil then
       box.space.group:insert{group_id, group}
       --end
+      return "true"
    else
-      return false
+      return "false"
    end
 end
 
@@ -170,6 +174,7 @@ function fn.join_group(name, group_id)
    local usergroup_id = uuid.bin()
    if box.space.group.index.group_id:get(group_id) ~= nil and box.space.usergroup.index.user:select(name)[1] == nil then
       box.space.usergroup:insert{usergroup_id, name, group_id}
+      return box.space.group.index.group_id:get(group_id).group_name
    else
       return false
    end
@@ -190,23 +195,32 @@ function fn.get_user_groups(name)
    return t_user_groups_names
 end
 
-function fn.del_group(user, group)
-   local del_id = box.space.usergroup.index.user_group:select({user, group})[1][1]
+function fn.del_group(user, group_id)
+   local del_id = box.space.usergroup.index.user_group:select({user, group_id})[1][1]
    box.space.usergroup.index.primary:delete(del_id)
+   if #box.space.usergroup.index.group_id:select(group_id) == 0 then 
+      box.space.group.index.group_id:delete(group_id)
+   end
 end
 
-function fn.edit_group(user, group, new_group)
-   local del_id = box.space.usergroup.index.user_group:select({user, group})[1][1]
-   box.space.usergroup.index.primary:update(del_id, {{'=', 3, new_group}})
-   box.space.group.index.group_id:update(del_id,{{'=', 2, new_group}})
+function fn.edit_group(user, group_id, new_group)
+
+   box.space.group.index.group_id:update(group_id,{{'=', 2, new_group}})
 end
 
 function fn.check_group_id(group_id)
-   if box.space.group.index.group_id:get(group_id) == nil then
-      return true
-   else
-      return false
+   if isStringOnlySpaces(group_id) then
+      return "0"
    end
+   if box.space.group.index.group_id:get(group_id) == nil then
+      return "true"
+   else
+      return "false"
+   end
+end
+
+function isStringOnlySpaces(str)
+   return str:gsub("%s+", "") == ""
 end
 
 
