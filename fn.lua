@@ -45,14 +45,14 @@ function fn.get_name(user_id)
 
 end
 
+--fn.new_msg("message", "tt", "artem")
 
 function fn.new_msg(message, group_id, user)
-   local msg_id = uuid.bin()
+   local msg_id = uuid.str()
    local tm = os.time()
    if (message ~= "") then
       box.space.msg:insert{msg_id, message, group_id, user, tm}
    end
-   
 end
 
 -- function fn.login(user_name)
@@ -122,14 +122,14 @@ function fn.time_group_msg(group_id, datetime) --загружает сообще
    local t_msg_arr = {}
    local cnt = 0
    for i = 1, #combined_result do 
-      table.insert( t_msg_arr, {combined_result[i][2], combined_result[i][4], combined_result[i][5]} )
+      table.insert( t_msg_arr, {combined_result[i][2], combined_result[i][4], combined_result[i][5], combined_result[i][1]} ) --id тоже возвращяем и пихаем в name listbox
       cnt = cnt + 1
    end
    return cnt, t_msg_arr
 end
 
 function fn.new_user(name, pass) 
-   local user_id = uuid.bin()
+   local user_id = uuid.str()
    local hashed_password = digest.sha256(pass)
    if box.space.user.index.name:get(name) ~= nil then
       return false
@@ -153,7 +153,7 @@ end
 
 
 function fn.new_group(name, group_id, group)
-   local usergroup_id = uuid.bin() 
+   local usergroup_id = uuid.str() 
    if isStringOnlySpaces(group_id) then
       return "0"
    end
@@ -171,7 +171,7 @@ end
 
 function fn.join_group(name, group_id) 
    --local group = box.space.group.index.group_id:get("testID").group_name
-   local usergroup_id = uuid.bin()
+   local usergroup_id = uuid.str()
    if box.space.group.index.group_id:get(group_id) ~= nil and box.space.usergroup.index.user:select(name)[1] == nil then
       box.space.usergroup:insert{usergroup_id, name, group_id}
       return box.space.group.index.group_id:get(group_id).group_name
@@ -206,6 +206,15 @@ end
 function fn.edit_group(user, group_id, new_group)
 
    box.space.group.index.group_id:update(group_id,{{'=', 2, new_group}})
+end
+
+function fn.edit_msg(msg_id, new_msg)
+   box.space.msg.index.primary:update(msg_id,{{'=', 2, new_msg}})
+   local msg = box.space.msg.index.primary:get(msg_id).message
+   local user = box.space.msg.index.primary:get(msg_id).user
+   local group_id = box.space.msg.index.primary:get(msg_id).group_id
+   local group_name = box.space.group.index.group_id:get(group_id).group_name
+   return user, group_name, msg
 end
 
 function fn.check_group_id(group_id)
