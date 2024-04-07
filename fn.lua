@@ -217,6 +217,15 @@ function fn.edit_msg(msg_id, new_msg)
    return user, group_name, msg
 end
 
+function fn.get_selected_msg(msg_id)
+   local msg = box.space.msg.index.primary:get(msg_id).message
+   local user = box.space.msg.index.primary:get(msg_id).user
+   local group_id = box.space.msg.index.primary:get(msg_id).group_id
+   local group_name = box.space.group.index.group_id:get(group_id).group_name
+   return user, group_name, msg
+end
+
+
 function fn.check_group_id(group_id)
    if isStringOnlySpaces(group_id) then
       return "0"
