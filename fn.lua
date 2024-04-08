@@ -134,6 +134,9 @@ function fn.new_user(name, pass)
    if box.space.user.index.name:get(name) ~= nil then
       return false
    end
+   if name == "system" then
+      return false
+   end
    box.space.user:insert{user_id, name, hashed_password}
    return true
 end
@@ -169,16 +172,21 @@ function fn.new_group(name, group_id, group)
    end
 end
 
-function fn.join_group(name, group_id) 
+function fn.join_group(name, group_id)
    --local group = box.space.group.index.group_id:get("testID").group_name
    local usergroup_id = uuid.str()
-   if box.space.group.index.group_id:get(group_id) ~= nil and box.space.usergroup.index.user:select(name)[1] == nil then
+   if box.space.group.index.group_id:get(group_id) ~= nil and box.space.usergroup.index.user_group:select({name, group_id})[1] == nil then
       box.space.usergroup:insert{usergroup_id, name, group_id}
       return box.space.group.index.group_id:get(group_id).group_name
    else
-      return false
+      return "false"
    end
 end
+
+--function fn.strChange(str)
+--   str = str:gsub("^@+", "")
+--   return str
+--end
 
 function fn.hash_password(password)
    local hashed_password = digest.sha256(password)
@@ -199,7 +207,16 @@ function fn.del_group(user, group_id)
    local del_id = box.space.usergroup.index.user_group:select({user, group_id})[1][1]
    box.space.usergroup.index.primary:delete(del_id)
    if #box.space.usergroup.index.group_id:select(group_id) == 0 then 
+      fn.del_group_msg(group_id)
       box.space.group.index.group_id:delete(group_id)
+   end
+end
+
+function fn.del_group_msg(group_id)
+   local messages = box.space.msg.index.group_id:select(group_id)
+   for _, msg in pairs(messages) do
+      local id = msg[1]
+      box.space.msg.index.primary:delete(id)
    end
 end
 
@@ -223,6 +240,10 @@ function fn.get_selected_msg(msg_id)
    local group_id = box.space.msg.index.primary:get(msg_id).group_id
    local group_name = box.space.group.index.group_id:get(group_id).group_name
    return user, group_name, msg
+end
+
+function fn.del_msg(msg_id)
+   box.space.msg.index.primary:delete(msg_id)
 end
 
 
