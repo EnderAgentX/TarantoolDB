@@ -70,7 +70,8 @@ local function bootstrap()
 	s_usergroup:format({
 		{name = "usergroup_id", type = 'string'},
 		{name = "user", type = 'string'},
-		{name = "group_id", type = 'string'}
+		{name = "group_id", type = 'string'},
+		{name = "role", type = 'string'}
 	})
 	s_usergroup:create_index('primary', {
 		type = 'tree',
@@ -85,6 +86,11 @@ local function bootstrap()
 		type = 'tree',
 		unique = false,
 		parts = {'group_id'}
+	})
+	s_usergroup:create_index('role', {
+		type = 'tree',
+		unique = false,
+		parts = {'role'}
 	})
 	s_usergroup:create_index('user_group', {
 		type = 'tree',

@@ -162,7 +162,7 @@ function fn.new_group(name, group_id, group)
    end
    if box.space.group.index.group_id:get(group_id) == nil then
       --box.space.usergroup.index.user_group:select({"artem", "testID"}) TODO исправить одинаковые группы с именем
-      box.space.usergroup:insert{usergroup_id, name, group_id}
+      box.space.usergroup:insert{usergroup_id, name, group_id, "admin"}
       --if box.space.group.index.group:get(group) == nil then
       box.space.group:insert{group_id, group}
       --end
@@ -176,12 +176,13 @@ function fn.join_group(name, group_id)
    --local group = box.space.group.index.group_id:get("testID").group_name
    local usergroup_id = uuid.str()
    if box.space.group.index.group_id:get(group_id) ~= nil and box.space.usergroup.index.user_group:select({name, group_id})[1] == nil then
-      box.space.usergroup:insert{usergroup_id, name, group_id}
+      box.space.usergroup:insert{usergroup_id, name, group_id, "user"}
       return box.space.group.index.group_id:get(group_id).group_name
    else
       return "false"
    end
 end
+
 
 --function fn.strChange(str)
 --   str = str:gsub("^@+", "")
@@ -246,6 +247,19 @@ function fn.del_msg(msg_id)
    box.space.msg.index.primary:delete(msg_id)
 end
 
+function fn.group_users_cnt(group_id)
+   local count = #box.space.usergroup.index.group_id:select(group_id)
+   return tostring(count)
+end
+
+function fn.group_users(group_id)
+   local group_users = box.space.usergroup.index.group_id:select(group_id)
+   local group_users_role = {}
+   for i = 1, #group_users do
+      table.insert( group_users_role, {group_users[i][2], group_users[i][4]} )
+   end
+   return group_users_role
+end
 
 function fn.check_group_id(group_id)
    if isStringOnlySpaces(group_id) then
@@ -261,6 +275,26 @@ end
 function isStringOnlySpaces(str)
    return str:gsub("%s+", "") == ""
 end
+
+function fn.promote_user(user, group_id, rank)
+   if user ~= nil and group_id ~= nil then
+      local promoteId = box.space.usergroup.index.user_group:select({user, group_id})[1][1]
+      box.space.usergroup.index.primary:update(promoteId,{{'=', 4, rank}})
+   end
+end
+
+function fn.get_user_role(user, group_id)
+   return box.space.usergroup.index.user_group:select({user, group_id})[1][4]
+end
+
+function fn.group_exists(user, group_id)
+   if box.space.usergroup.index.user_group:select({user, group_id})[1] == nil then
+      return false
+   else
+      return true
+   end
+end
+
 
 
 
