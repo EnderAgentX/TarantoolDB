@@ -109,6 +109,7 @@ end
 -- end
 
 function fn.time_group_msg(group_id, datetime) --загружает сообщения больше определенного времени
+   local seven_days_ago = os.time() - (7 * 24 * 60 * 60)
    t_msg1 = box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
    t_msg2 = box.space.msg.index.group_id:select{group_id}
    local combined_result = {}
@@ -121,12 +122,44 @@ function fn.time_group_msg(group_id, datetime) --загружает сообще
    end 
    local t_msg_arr = {}
    local cnt = 0
-   for i = 1, #combined_result do 
+   if #combined_result > 99 then
+      for i = #combined_result - 99, #combined_result do
+         if combined_result[i][5] >= seven_days_ago then
+            table.insert( t_msg_arr, {combined_result[i][2], combined_result[i][4], combined_result[i][5], combined_result[i][1]} ) --id тоже возвращяем и пихаем в name listbox
+            cnt = cnt + 1
+         end
+      end
+   else 
+      for i = 1, #combined_result do 
+         table.insert( t_msg_arr, {combined_result[i][2], combined_result[i][4], combined_result[i][5], combined_result[i][1]} ) --id тоже возвращяем и пихаем в name listbox
+         cnt = cnt + 1
+      end
+   end
+   return cnt, t_msg_arr
+end
+
+function fn.time_group_msg_test(group_id, datetime)
+   local thirty_days_ago = os.time() - (30 * 24 * 60 * 60)
+   t_msg1 = box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
+   t_msg2 = box.space.msg.index.group_id:select{group_id}
+   local combined_result = {}
+   for _, v in ipairs(t_msg1) do
+      for _, w in ipairs(t_msg2) do
+         if v == w then
+            table.insert(combined_result, v)
+         end
+      end
+   end 
+   local t_msg_arr = {}
+   local cnt = 0
+   for i = 1, #combined_result do
+
       table.insert( t_msg_arr, {combined_result[i][2], combined_result[i][4], combined_result[i][5], combined_result[i][1]} ) --id тоже возвращяем и пихаем в name listbox
       cnt = cnt + 1
    end
    return cnt, t_msg_arr
 end
+
 
 function fn.new_user(name, pass) 
    local user_id = uuid.str()
