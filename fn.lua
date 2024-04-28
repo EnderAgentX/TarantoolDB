@@ -47,10 +47,84 @@ end
 
 --fn.new_msg("message", "tt", "artem")
 
+function fn.test_time(group_id)
+   local count = 0
+
+   local current_date = os.date("*t")
+
+   -- Устанавливаем время на полночь
+   current_date.hour = 0
+   current_date.min = 0
+   current_date.sec = 0
+
+   -- Преобразуем время полуночи в Unix epoch
+   local start_of_day = os.time(current_date)
+
+   -- Вывод результатов
+
+   local all_msg = box.space.msg.index.group_id:select(group_id)
+   for _, msg in pairs(all_msg) do
+      if msg[5] >= start_of_day then
+         count = count + 1
+         if (count > 0) then
+            break
+         end
+      end
+   end
+
+   local current_time = os.time() -- Получаем текущую дату и время в формате Unix epoch
+   local current_date = os.date("*t", current_time) -- Преобразуем Unix epoch в таблицу с датой и временем
+   
+   local formatted_date = os.time(current_date) -- Преобразуем таблицу обратно в Unix epoch без времени
+
+
+   print(count)
+   if (count == 0) then
+      print(os.date("%d.%m.%Y", formatted_date))
+      local msg_id = uuid.str()
+      local system_msg_id = uuid.str()
+      print(msg_id, system_msg_id)
+   end
+end
+
+
 function fn.new_msg(message, group_id, user)
+   local count = 0
+
+   local current_date = os.date("*t")
+
+   -- Устанавливаем время на полночь
+   current_date.hour = 0
+   current_date.min = 0
+   current_date.sec = 0
+
+   -- Преобразуем время полуночи в Unix epoch
+   local start_of_day = os.time(current_date)
+
+   -- Вывод результатов
+
+   local all_msg = box.space.msg.index.group_id:select(group_id)
+   for _, msg in pairs(all_msg) do
+      if msg[5] >= start_of_day then
+         count = count + 1
+         if (count > 0) then
+            break
+         end
+      end
+   end
+
+
    local msg_id = uuid.str()
+   local system_msg_id = uuid.str()
    local tm = os.time()
+
+
    if (message ~= "") then
+      if (count == 0) then
+         local formatted_date = os.time(current_date)
+         local mew_msg_date = os.date("%d.%m.%Y", formatted_date)
+         box.space.msg:insert{system_msg_id, mew_msg_date, group_id, "system", tm}
+      end
       box.space.msg:insert{msg_id, message, group_id, user, tm}
    end
 end
@@ -328,6 +402,45 @@ function fn.group_exists(user, group_id)
    end
 end
 
+function fn.get_msg_cnt(group_id, days)
+   local days_ago = os.time() - (days * 24 * 60 * 60)
+   local count = 0
+   local all_msg = box.space.msg.index.group_id:select(group_id)
+   for _, msg in pairs(all_msg) do
+      if msg[4] ~= 'system' and msg[5] >= days_ago then
+         count = count + 1
+      end
+   end
+   return tostring(count)
+end
+
+function fn.get_max_user_sg(group_id, days)
+   local days_ago = os.time() - (days * 24 * 60 * 60)
+   local user_messages = {}
+
+   local all_msg = box.space.msg.index.group_id:select(group_id)
+
+   for _, msg in pairs(all_msg) do
+      local username = msg[4]  -- Предполагая, что имя пользователя находится в первом столбце
+      if user_messages[username] and msg[4] ~= 'system' and msg[5] >= days_ago then
+         user_messages[username] = user_messages[username] + 1
+      else
+         if msg[4] ~= 'system' and msg[5] >= days_ago then
+            user_messages[username] = 1
+         end
+      end
+   end
+
+   local max_user = nil
+   local max_count = 0
+   for username, count in pairs(user_messages) do
+      if count > max_count then
+         max_user = username
+         max_count = count
+      end
+   end
+   return max_user, tostring(max_count)
+end
 
 
 
