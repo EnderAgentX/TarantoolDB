@@ -360,9 +360,10 @@ function fn.edit_msg(msg_id, new_msg)
    box.space.msg.index.primary:update(msg_id,{{'=', 2, new_msg}})
    local msg = box.space.msg.index.primary:get(msg_id).message
    local user = box.space.msg.index.primary:get(msg_id).user
+   local msg_time = box.space.msg.index.primary:get(msg_id).msg_time
    local group_id = box.space.msg.index.primary:get(msg_id).group_id
    local group_name = box.space.group.index.group_id:get(group_id).group_name
-   return user, group_name, msg
+   return user, group_name, msg, msg_time
 end
 
 function fn.get_selected_msg(msg_id)
