@@ -131,6 +131,14 @@ local function bootstrap()
 		unique = false,
 		parts = {'group_id'}
 	})
+
+	s_msg:create_index('user_group', {
+		type = 'tree',
+		unique = false,
+		parts = {'user', 'group_id'}
+	})
+
+	
 	
 	
 

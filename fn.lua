@@ -135,13 +135,36 @@ end
 --    return t_name[1][1], t_group 
 -- end
 
+function calculateCalendarDays(pastTimestamp)
+   -- Функция для вычисления календарных дней
+   local currentDate = os.date("*t", os.time())
+   local pastDate = os.date("*t", pastTimestamp)
 
+   -- Установка времени на начало дня для обеих дат
+   currentDate.hour = 0
+   currentDate.min = 0
+   currentDate.sec = 0
+   pastDate.hour = 0
+   pastDate.min = 0
+   pastDate.sec = 0
+
+   -- Преобразование обратно в timestamp
+   local currentDayTimestamp = os.time(currentDate)
+   local pastDayTimestamp = os.time(pastDate)
+
+   -- Вычисление разницы в днях
+   local differenceSeconds = currentDayTimestamp - pastDayTimestamp
+   local daysDifference = math.floor(differenceSeconds / (24 * 3600))
+
+   return daysDifference
+end
 
 function fn.time_test()
-   local tm = os.time()
-   box.space.msg:insert{1, "ab", 1, tm}
-   box.space.msg:select()
-   print(tm)
+
+   local pastTimestamp = 1714950682  -- Пример timestamp
+   local daysPassed = calculateCalendarDays(pastTimestamp)
+   print("Календарных дней прошло: " .. daysPassed)
+
 end
 
 function fn.insertAll()
@@ -363,7 +386,22 @@ function fn.group_users(group_id)
    local group_users = box.space.usergroup.index.group_id:select(group_id)
    local group_users_role = {}
    for i = 1, #group_users do
-      table.insert( group_users_role, {group_users[i][2], group_users[i][4]} )
+      local user_name = group_users[i][2]
+      local user_role = group_users[i][4]
+      local daysPassed = "no"
+      local user_last_time = 0
+      if #box.space.msg.index.user_group:select({user_name, group_id}) ~= 0 then
+         local userMsgArr = box.space.msg.index.user_group:select({user_name, group_id})
+         for _, message in ipairs(userMsgArr) do
+            if message[5] > user_last_time then
+               user_last_time = message[5]
+            end
+        end
+        print(user_last_time)
+         daysPassed = tostring(calculateCalendarDays(user_last_time))
+      end
+
+      table.insert( group_users_role, {user_name, user_role, daysPassed} )
    end
    return group_users_role
 end
