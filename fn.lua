@@ -1,6 +1,7 @@
 local uuid = require('uuid')
 local digest = require('digest')
 local datetime = require('datetime')
+local fiber = require('fiber')
 
 local fn =  {}
 
@@ -122,6 +123,7 @@ function fn.new_msg(message, group_id, user)
          local mew_msg_date = os.date("%d.%m.%Y", formatted_date)
          box.space.msg:insert{system_msg_id, mew_msg_date, group_id, "system", tm}
       end
+      tm = os.time() + 1
       box.space.msg:insert{msg_id, message, group_id, user, tm}
    end
 end
