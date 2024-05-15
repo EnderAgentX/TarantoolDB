@@ -45,7 +45,6 @@ function fn.get_name(user_id)
 
 end
 
---fn.new_msg("message", "tt", "artem")
 
 function fn.test_time(group_id)
    local count = 0
@@ -57,7 +56,6 @@ function fn.test_time(group_id)
    current_date.min = 0
    current_date.sec = 0
 
-   -- Преобразуем время полуночи в Unix epoch
    local start_of_day = os.time(current_date)
 
    -- Вывод результатов
@@ -72,10 +70,10 @@ function fn.test_time(group_id)
       end
    end
 
-   local current_time = os.time() -- Получаем текущую дату и время в формате Unix epoch
-   local current_date = os.date("*t", current_time) -- Преобразуем Unix epoch в таблицу с датой и временем
+   local current_time = os.time() 
+   local current_date = os.date("*t", current_time) 
    
-   local formatted_date = os.time(current_date) -- Преобразуем таблицу обратно в Unix epoch без времени
+   local formatted_date = os.time(current_date) 
 
 
    print(count)
@@ -98,7 +96,6 @@ function fn.new_msg(message, group_id, user)
    current_date.min = 0
    current_date.sec = 0
 
-   -- Преобразуем время полуночи в Unix epoch
    local start_of_day = os.time(current_date)
 
    -- Вывод результатов
@@ -129,11 +126,6 @@ function fn.new_msg(message, group_id, user)
    end
 end
 
--- function fn.login(user_name)
---    t_name = box.space.user.index.name:select(user_name)
---    t_group = t_name[1][3]
---    return t_name[1][1], t_group 
--- end
 
 function calculateCalendarDays(pastTimestamp)
    -- Функция для вычисления календарных дней
@@ -191,19 +183,6 @@ function fn.users()
    end
    return t_users_arr
 end
-
---TODO Поиск всех сообщений из 1 гильдии больше времени последнего сообщения
-
--- function fn.time_group_msg(datetime) --загружает сообщения больше определенного времени
---    t_msg = box.space.msg.index.time:select({datetime}, {iterator = 'GT'})
---    local t_msg_arr = {}
---    local cnt = 0
---    for i = 1, #t_msg do 
---       table.insert( t_msg_arr, {t_msg[i][2], t_msg[i][4], t_msg[i][5]} )
---       cnt = cnt + 1
---    end
---    return cnt, t_msg_arr
--- end
 
 function fn.time_group_msg(group_id, datetime) --загружает сообщения больше определенного времени
    local seven_days_ago = os.time() - (7 * 24 * 60 * 60)
@@ -291,11 +270,8 @@ function fn.new_group(name, group_id, group)
       return "0"
    end
    if box.space.group.index.group_id:get(group_id) == nil then
-      --box.space.usergroup.index.user_group:select({"artem", "testID"}) TODO исправить одинаковые группы с именем
       box.space.usergroup:insert{usergroup_id, name, group_id, "admin"}
-      --if box.space.group.index.group:get(group) == nil then
       box.space.group:insert{group_id, group}
-      --end
       return "true"
    else
       return "false"
@@ -303,7 +279,6 @@ function fn.new_group(name, group_id, group)
 end
 
 function fn.join_group(name, group_id)
-   --local group = box.space.group.index.group_id:get("testID").group_name
    local usergroup_id = uuid.str()
    if box.space.group.index.group_id:get(group_id) ~= nil and box.space.usergroup.index.user_group:select({name, group_id})[1] == nil then
       box.space.usergroup:insert{usergroup_id, name, group_id, "user"}
@@ -460,7 +435,7 @@ function fn.get_max_user_sg(group_id, days)
    local all_msg = box.space.msg.index.group_id:select(group_id)
 
    for _, msg in pairs(all_msg) do
-      local username = msg[4]  -- Предполагая, что имя пользователя находится в первом столбце
+      local username = msg[4]
       if user_messages[username] and msg[4] ~= 'system' and msg[5] >= days_ago then
          user_messages[username] = user_messages[username] + 1
       else
@@ -486,12 +461,3 @@ end
 
 
 return fn	
-
---lsof -i :3312
---kill 4593
---Последний элемент по времени
---box.space.msg.index.time:select({}, {iterator = 'REQ', limit = 1, sort = 'ask'})
-
---TODO 
---1) Переделать id на UUID
---2) Не загружает когда нет сообщений в гильдии

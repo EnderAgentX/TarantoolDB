@@ -20,17 +20,6 @@ box.cfg{
 	log         		= 'tarantool.log'
 }
 
-sf_error = {
-	ok = 0,
-	error = 1,
-	not_found = 2,
-	update_error = 3,
-	
-	user_overlap = 100,
-	user_social_overlap = 101,
-	user_session_expired = 102
-}
-
 local session_life_time = 600 -- Время жизни сессии
 
 
