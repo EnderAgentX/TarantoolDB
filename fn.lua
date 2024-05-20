@@ -5,29 +5,6 @@ local fiber = require('fiber')
 
 local fn =  {}
 
-
-
-
-function fn.add(a,b)
-   return (a+b)
-end
-
-function fn.test()
-   return "test"
-end
-
-function fn.sub(a,b)
-   print(a-b)
-end
-
-function fn.mul(a,b)
-   print(a*b)
-end
-
-function fn.div(a,b)
-   print(a/b)
-end
-
 local s_users = box.space.user
 function fn.get_group_id(user_id)
 	local t_user_id = s_user.index.primary:get{user_id}
@@ -52,14 +29,12 @@ function fn.test_time(group_id)
 
    local current_date = os.date("*t")
 
-   -- Устанавливаем время на полночь
    current_date.hour = 0
    current_date.min = 0
    current_date.sec = 0
 
    local start_of_day = os.time(current_date)
 
-   -- Вывод результатов
 
    local all_msg = box.space.msg.index.group_id:select(group_id)
    for _, msg in pairs(all_msg) do
@@ -92,14 +67,12 @@ function fn.new_msg(message, group_id, user)
 
    local current_date = os.date("*t")
 
-   -- Устанавливаем время на полночь
    current_date.hour = 0
    current_date.min = 0
    current_date.sec = 0
 
    local start_of_day = os.time(current_date)
 
-   -- Вывод результатов
 
    local all_msg = box.space.msg.index.group_id:select(group_id)
    for _, msg in pairs(all_msg) do
@@ -130,11 +103,9 @@ end
 
 
 function calculateCalendarDays(pastTimestamp)
-   -- Функция для вычисления календарных дней
    local currentDate = os.date("*t", os.time())
    local pastDate = os.date("*t", pastTimestamp)
 
-   -- Установка времени на начало дня для обеих дат
    currentDate.hour = 0
    currentDate.min = 0
    currentDate.sec = 0
@@ -142,11 +113,9 @@ function calculateCalendarDays(pastTimestamp)
    pastDate.min = 0
    pastDate.sec = 0
 
-   -- Преобразование обратно в timestamp
    local currentDayTimestamp = os.time(currentDate)
    local pastDayTimestamp = os.time(pastDate)
 
-   -- Вычисление разницы в днях
    local differenceSeconds = currentDayTimestamp - pastDayTimestamp
    local daysDifference = math.floor(differenceSeconds / (24 * 3600))
 
@@ -290,11 +259,6 @@ function fn.join_group(name, group_id)
    end
 end
 
-
---function fn.strChange(str)
---   str = str:gsub("^@+", "")
---   return str
---end
 
 function fn.hash_password(password)
    local hashed_password = digest.sha256(password)
@@ -457,9 +421,6 @@ function fn.get_max_user_sg(group_id, days)
    end
    return max_user, tostring(max_count)
 end
-
-
-
 
 
 return fn	

@@ -1,15 +1,11 @@
-#!/usr/local/bin tarantool
-
 local uuid = require('uuid')
 local console = require('console')
 local log = require('log')
 local clock = require('clock')
 
--- Запускаем консоль администратора
 console.listen('127.0.0.1:3312')
 
 box.cfg{
-	--background          = true,
 	listen              = 3301,
 	memtx_memory        = 100000000,
 	pid_file            = 'tarantool.pid',    
@@ -20,7 +16,7 @@ box.cfg{
 	log         		= 'tarantool.log'
 }
 
-local session_life_time = 600 -- Время жизни сессии
+local session_life_time = 600
 
 
 local function bootstrap()
@@ -127,9 +123,6 @@ local function bootstrap()
 		parts = {'user', 'group_id'}
 	})
 
-	
-	
-	
 
 	box.schema.user.create('ex', { password = 'secret' })
 	box.schema.user.grant('ex','read,write,execute,create,drop','universe')
@@ -138,19 +131,8 @@ local function bootstrap()
 	box.schema.user.grant('repl', 'replication')
 end
 
--- for first run create a space and add set up grants
 box.once('replica', bootstrap)
 
---box.space.guild.index.primary:select()
---box.space.guild:insert{1, 'EscapeWorld'}
---box.space.user:insert{1, 'EnderAgent_X', 1}
---box.space.user.index.primary:select()
---box.space.guild:insert{2, 'Robots'}
---box.space.user:insert{2, 'Bot', 2}
-
----------------------------------------------------------------------------------------------------------------------
---             Проверка строки на NULL или пустую строку
----------------------------------------------------------------------------------------------------------------------
 local function is_str_empty(str)
 	return str == nil or str == ''
 end
@@ -161,11 +143,6 @@ local function get_group_id(user_id)
 	return t_user_id[group_id]
 end
 
-
-
----------------------------------------------------------------------------------------------------------------------
---             Для отладки запустим консоль
----------------------------------------------------------------------------------------------------------------------
 fn = require("fn")
 
 console.start()
